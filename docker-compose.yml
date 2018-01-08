@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  slack-quiz-bot:
+    env_file:
+      - config.env
+    image: slack-quiz-bot:dev
+    container_name: slack-quiz-bot
+    build:
+      context: .
