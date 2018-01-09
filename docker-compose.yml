@@ -7,3 +7,7 @@ services:
     container_name: slack-quiz-bot
     build:
       context: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/slack-quiz-bot/

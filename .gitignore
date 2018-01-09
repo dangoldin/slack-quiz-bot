@@ -100,8 +100,9 @@ ENV/
 # mypy
 .mypy_cache/
 
-# Env
+# Env/Secret
 config.env
+credentials.json
 
 # Tmp
 *.*~
