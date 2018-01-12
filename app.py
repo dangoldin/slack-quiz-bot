@@ -11,11 +11,6 @@ from slack_helper import SlackHelper
 from flask import Flask
 from flask import request
 
-FORMAT = '%(asctime)-15s %(message)s'
-logging.basicConfig(format=FORMAT)
-logger = logging.getLogger('app')
-logger.setLevel(logging.DEBUG)
-
 app = Flask(__name__)
 
 gs = GSheetHelper(os.environ['CREDENTIALS_FILE'])
@@ -26,7 +21,7 @@ def get_questions():
 
 @app.route('/quizme', methods=['POST', 'GET'])
 def quizme():
-    logger.info(request.args)
+    app.logger.info('Request args: %s', request.args)
 
     questions = get_questions()
     question = random.choice(questions)
@@ -42,6 +37,15 @@ def quizme():
 def index():
     questions = get_questions()
     return json.dumps(questions)
+
+# From https://gist.github.com/sysradium/83118249d7930ef7dfbf
+@app.before_first_request
+def setup_logging():
+    # if not app.debug:
+    if True:
+        # In production mode, add log handler to sys.stderr.
+        app.logger.addHandler(logging.StreamHandler())
+        app.logger.setLevel(logging.INFO)
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
