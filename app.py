@@ -29,7 +29,7 @@ def get_questions():
 def quizme():
     app.logger.info('Got quizme request')
 
-    # TODO: Use these later
+    # TODO: Use these later for something?
     # user_id = request.form.get('user_id')
     # user_name = request.form.get('user_name')
     # text = request.form.get('text')
@@ -57,7 +57,6 @@ def quizme():
         "text": question_text,
         "attachments": [
             {
-                # "text": question_text,
                 "fallback": "Please answer the question",
                 "callback_id": question_text,
                 "color": "#3AA3E3",
@@ -104,11 +103,13 @@ def index():
 # From https://gist.github.com/sysradium/83118249d7930ef7dfbf
 @app.before_first_request
 def setup_logging():
-    # if not app.debug:
-    if True:
-        # In production mode, add log handler to sys.stderr.
-        app.logger.addHandler(logging.StreamHandler())
+    app.logger.addHandler(logging.StreamHandler())
+    if not app.debug:
+        # TODO: In production mode, add log handler to sys.stderr.
         app.logger.setLevel(logging.INFO)
+    else:
+        app.logger.setLevel(logging.DEBUG)
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
