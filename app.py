@@ -25,14 +25,19 @@ sh = SlackHelper(os.environ['SLACK_TOKEN'])
 def get_questions():
     return gs.get_rows('Quiz questions', 'Questions')
 
+def get_message_info(request):
+    return {
+        'user_id': request.form.get('user_id'),
+        'user_name': request.form.get('user_name'),
+        'text': request.form.get('text'),
+    }
+
 @app.route('/quizme', methods=['POST', 'GET'])
 def quizme():
     app.logger.info('Got quizme request')
 
     # TODO: Use these later for something?
-    # user_id = request.form.get('user_id')
-    # user_name = request.form.get('user_name')
-    # text = request.form.get('text')
+    message_info = get_message_info(request)
 
     questions = get_questions()
     question = random.choice(questions)
@@ -95,6 +100,30 @@ def quizresponse():
         'text': text
     })
 
+@app.route('/showstats', methods=['POST', 'GET'])
+def showstats():
+    message_info = get_message_info(request)
+
+    app.logger.info('Showing stats for %s', message_info['user_name'])
+
+    user_name = message_info['user_name']
+
+    if user_name in user_scores:
+        text = 'You got ' + str(user_scores[user_name][0]) + ' out of ' + str(user_scores[user_name][1]) + ' correct'
+    else:
+        text = 'No scores found for ' + user_name
+
+    return jsonify({
+        'text': text
+    })
+
+# TODO: Fill this out
+@app.route('/showallstats', methods=['POST', 'GET'])
+def showallstats():
+    return jsonify({
+        'text': 'TODO'
+    })
+
 @app.route('/')
 def index():
     questions = get_questions()
@@ -109,7 +138,6 @@ def setup_logging():
         app.logger.setLevel(logging.INFO)
     else:
         app.logger.setLevel(logging.DEBUG)
-
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
