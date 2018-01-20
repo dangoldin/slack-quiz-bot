@@ -32,6 +32,9 @@ def get_message_info(request):
         'text': request.form.get('text'),
     }
 
+def get_user_score_message(user_score):
+    return 'got ' + str(user_score[0]) + ' out of ' + str(user_score[1]) + ' correct'
+
 @app.route('/quizme', methods=['POST', 'GET'])
 def quizme():
     app.logger.info('Got quizme request')
@@ -94,7 +97,7 @@ def quizresponse():
     else:
         text = 'Wrong. Better luck next time. The answer was: ' + actual_answer
 
-    text += '\nYou got ' + str(user_scores[user_name][0]) + ' out of ' + str(user_scores[user_name][1]) + ' correct'
+    text += 'You ' + get_user_score_message(user_scores[user_name])
 
     return jsonify({
         'text': text
@@ -109,7 +112,7 @@ def showstats():
     user_name = message_info['user_name']
 
     if user_name in user_scores:
-        text = 'You got ' + str(user_scores[user_name][0]) + ' out of ' + str(user_scores[user_name][1]) + ' correct'
+        text = 'You ' + get_user_score_message(user_scores[user_name])
     else:
         text = 'No scores found for ' + user_name
 
@@ -117,11 +120,11 @@ def showstats():
         'text': text
     })
 
-# TODO: Fill this out
 @app.route('/showallstats', methods=['POST', 'GET'])
 def showallstats():
     return jsonify({
-        'text': 'TODO'
+        'text': '\n'.join(user_name + ' ' + get_user_score_message(user_score) \
+            for user_name, user_score in user_scores.iteritems())
     })
 
 @app.route('/')
@@ -140,4 +143,4 @@ def setup_logging():
         app.logger.setLevel(logging.DEBUG)
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
