@@ -13,6 +13,7 @@ from slack_helper import SlackHelper
 from flask import Flask
 from flask import request
 from flask import jsonify
+from flask import abort
 
 app = Flask(__name__)
 
@@ -129,8 +130,7 @@ def showallstats():
 
 @app.route('/')
 def index():
-    questions = get_questions()
-    return json.dumps(questions)
+    abort(404)
 
 # From https://gist.github.com/sysradium/83118249d7930ef7dfbf
 @app.before_first_request
