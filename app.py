@@ -15,10 +15,12 @@ from flask import request
 from flask import jsonify
 from flask import abort
 
+from models import UserScore
+
 app = Flask(__name__)
 
 questions_answers = {}
-user_scores = defaultdict(lambda: [0, 0])
+user_scores = defaultdict(UserScore)
 
 gs = GSheetHelper(os.environ['CREDENTIALS_FILE'])
 sh = SlackHelper(os.environ['SLACK_TOKEN'])
@@ -32,9 +34,6 @@ def get_message_info(request):
         'user_name': request.form.get('user_name'),
         'text': request.form.get('text'),
     }
-
-def get_user_score_message(user_score):
-    return 'got ' + str(user_score[0]) + ' out of ' + str(user_score[1]) + ' correct'
 
 @app.route('/quizme', methods=['POST', 'GET'])
 def quizme():
@@ -91,14 +90,14 @@ def quizresponse():
 
     app.logger.info('User scores: %s', user_scores[user_name])
 
-    user_scores[user_name][1] += 1 # Guesses
     if actual_answer == guess:
-        user_scores[user_name][0] += 1 # Answers
+        user_name[user_name].right()
         text = 'Correct'
     else:
+        user_name[user_name].wrong()
         text = 'Wrong. Better luck next time. The answer was: ' + actual_answer
 
-    text += 'You ' + get_user_score_message(user_scores[user_name])
+    text += 'You ' + user_scores[user_name].get_user_score_message()
 
     return jsonify({
         'text': text
@@ -113,7 +112,7 @@ def showstats():
     user_name = message_info['user_name']
 
     if user_name in user_scores:
-        text = 'You ' + get_user_score_message(user_scores[user_name])
+        text = 'You ' + user_scores[user_name].get_user_score_message()
     else:
         text = 'No scores found for ' + user_name
 
@@ -124,7 +123,7 @@ def showstats():
 @app.route('/showallstats', methods=['POST', 'GET'])
 def showallstats():
     return jsonify({
-        'text': '\n'.join(user_name + ' ' + get_user_score_message(user_score) \
+        'text': '\n'.join(user_name + ' ' + user_score.get_user_score_message() \
             for user_name, user_score in user_scores.iteritems())
     })
 
