@@ -106,10 +106,9 @@ def quizresponse():
 @app.route('/showstats', methods=['POST', 'GET'])
 def showstats():
     message_info = get_message_info(request)
-
-    app.logger.info('Showing stats for %s', message_info['user_name'])
-
     user_name = message_info['user_name']
+
+    app.logger.info('Showing stats for %s', user_name)
 
     if user_name in user_scores:
         text = 'You ' + user_scores[user_name].get_user_score_message()
