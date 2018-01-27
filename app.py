@@ -58,7 +58,7 @@ def quizme():
             'name': 'responses',
             'text': choice,
             'type': 'button',
-            'value': choice
+            'value': choice,
         })
 
     return jsonify({
@@ -69,7 +69,7 @@ def quizme():
                 "callback_id": question_text,
                 "color": "#3AA3E3",
                 "attachment_type": "default",
-                "actions": actions
+                "actions": actions,
             }
         ]
     })
@@ -116,7 +116,7 @@ def showstats():
         text = 'No scores found for ' + user_name
 
     return jsonify({
-        'text': text
+        'text': text,
     })
 
 @app.route('/showallstats', methods=['POST', 'GET'])
