@@ -88,13 +88,13 @@ def quizresponse():
     app.logger.info('User scores: %s', user_scores[user_name])
 
     if actual_answer == guess:
-        user_name[user_name].right()
-        text = 'Correct'
+        user_scores[user_name].right()
+        text = 'Correct! '
     else:
-        user_name[user_name].wrong()
-        text = 'Wrong. Better luck next time. The answer was: ' + actual_answer
+        user_scores[user_name].wrong()
+        text = 'Wrong. Better luck next time. The answer was: ' + actual_answer + '. '
 
-    text += 'You ' + user_scores[user_name].get_user_score_message()
+    text += '\nYou ' + user_scores[user_name].get_user_score_message()
 
     return jsonify({
         'text': text
@@ -118,9 +118,15 @@ def showstats():
 
 @app.route('/showallstats', methods=['POST', 'GET'])
 def showallstats():
+    app.logger.info('User scores %s', user_scores)
+
+    if len(user_scores) > 0:
+        text = '\n'.join(user_name + ' ' + user_score.get_user_score_message() \
+            for user_name, user_score in user_scores.items())
+    else:
+        text = 'Not enough data to show all scores'
     return jsonify({
-        'text': '\n'.join(user_name + ' ' + user_score.get_user_score_message() \
-            for user_name, user_score in user_scores.iteritems())
+        'text': text
     })
 
 @app.route('/')
