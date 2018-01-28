@@ -39,9 +39,6 @@ def get_message_info(request):
 def quizme():
     app.logger.info('Got quizme request')
 
-    # TODO: Use these later for something?
-    message_info = get_message_info(request)
-
     questions = get_questions()
     question = random.choice(questions)
     question_text = question['Question']
