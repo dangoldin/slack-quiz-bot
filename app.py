@@ -26,7 +26,12 @@ gs = GSheetHelper(os.environ['CREDENTIALS_FILE'])
 sh = SlackHelper(os.environ['SLACK_TOKEN'])
 
 def get_questions():
-    return gs.get_rows('Quiz questions', 'Questions')
+    try:
+        return gs.get_rows('Quiz questions', 'Questions')
+    except:
+        app.logger.info('Failed to get questions. Trying to get new credentials')
+        gs = GSheetHelper(os.environ['CREDENTIALS_FILE'])
+        return gs.get_rows('Quiz questions', 'Questions')
 
 def get_message_info(request):
     return {
